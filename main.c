@@ -9,6 +9,10 @@
 #include "inttypes.h"
 #include "stdio.h"
 
+#include "utils.h"
+#include "recive.h"
+#include "send.h"
+
 static int check_input(int argc, char *argv[]);
 
 #define MAX_TTL 30
@@ -18,13 +22,18 @@ int main(int argc, char *argv[])
     if (!check_input(argc, argv))
     {
         perror("Incorrect ip adress format");
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    int socketfd __attribute__((unused))= socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    int socketfd __attribute__((unused)) = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (socketfd < 0)
+    {
+        fprintf(stderr, "socket error: %s\n", strerror(errno));
+        return EXIT_FAILURE;
+    }
 
     for (int i = 1; i < MAX_TTL; i++)
-    { 
+    {
     }
     return 0;
 }
@@ -43,4 +52,3 @@ static int check_input(int argc, char *argv[])
     }
     return 1;
 }
-

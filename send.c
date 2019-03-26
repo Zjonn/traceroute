@@ -12,9 +12,12 @@
 #include "stdio.h"
 #include "assert.h"
 
+#include "utils.h"
+
 static u_int16_t compute_icmp_checksum(const void *buff, int length);
 
-void send_pings(int sockfd, char ip_adr[], int ttl, int n) {
+void send_pings(int sockfd, char ip_adr[], int ttl, int n)
+{
   struct icmphdr icmp_header;
 
   icmp_header.type = ICMP_ECHO;
@@ -28,7 +31,8 @@ void send_pings(int sockfd, char ip_adr[], int ttl, int n) {
 
   setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int));
 
-  for (int i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++)
+  {
     icmp_header.un.echo.sequence = ttl << 8 | i;
     icmp_header.checksum = 0;
     icmp_header.checksum =
@@ -38,19 +42,25 @@ void send_pings(int sockfd, char ip_adr[], int ttl, int n) {
         sendto(sockfd, &icmp_header, sizeof(icmp_header), 0,
                (struct sockaddr *)&recipient, sizeof(recipient));
 
-    if (bytes_sent == -1) {
-      fprintf(stderr, "Unable to send ping! Errno: %s", strerror(errno));
+    log("ECHO_REQ nr %i send with ttl %d", i, ttl);
+
+    if (bytes_sent == -1)
+    {
+      fprintf(stderr, "Unable to send echo request! Errno: %s", strerror(errno));
       exit(666);
     }
   }
 }
 
-static u_int16_t compute_icmp_checksum(const void *buff, int length) {
+static u_int16_t compute_icmp_checksum(const void *buff, int length)
+{
   u_int32_t sum;
   const u_int16_t *ptr = buff;
   assert(length % 2 == 0);
+
   for (sum = 0; length > 0; length -= 2)
     sum += *ptr++;
+
   sum = (sum >> 16) + (sum & 0xffff);
   return (u_int16_t)(~(sum + (sum >> 16)));
 }
