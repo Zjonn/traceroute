@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 {
     if(!check_input(argc, argv))
     {
-        perror("Incorrect ip adress format");
+        printf("Incorrect ip adress format\n");
         return EXIT_FAILURE;
     }
 
@@ -35,15 +35,13 @@ int main(int argc, char* argv[])
     }
 
     reply_data replies[PACKEGES_PER_TTL];
-    for(int ttl = 1; ttl < MAX_TTL; ttl++)
+    for(int ttl = 1, reached = 0; ttl < MAX_TTL && reached == 0; ttl++)
     {
-        memset(replies, 0, sizeof(replies));
-
         send_pings(socketfd, argv[1], ttl);
 
         LOG("");
-
-        recive(socketfd, ttl, &replies);
+        memset(replies, 0, sizeof(replies));
+        reached = recive(socketfd, ttl, &replies);
 
         LOG("");
         print_results(ttl, &replies);
@@ -72,14 +70,15 @@ static void print_results(int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
     int16_t avg = 0;
     for(int i = 0; i < PACKEGES_PER_TTL; i++)
     {
-        is_reply += replies[i]->recived;
-        no_avg += replies[i]->recived == 0;
-        avg += replies[i]->us / 1000;
-        LOG("%d ", replies[i]->recived);
+        is_reply += (*replies)[i].recived;
+        no_avg += (*replies)[i].recived == 0;
+        avg += (*replies)[i].ms;
+
+        LOG("%d ", (*replies)[i].recived);
     }
     avg /= PACKEGES_PER_TTL;
 
-    printf("%d. ", ttl);
+    printf("%.2d. ", ttl);
     if(!is_reply)
     {
         printf("*\n");
@@ -87,18 +86,18 @@ static void print_results(int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
     }
     for(int i = 0; i < PACKEGES_PER_TTL; i++)
     {
-        if(replies[i]->recived)
-            printf("%s ", replies[i]->ip_addr);
+        if((*replies)[i].recived)
+            printf("%s ", (*replies)[i].ip_addr);
 
         for(int j = PACKEGES_PER_TTL - 1; j > i; j--)
         {
-            if(strcmp(replies[i]->ip_addr, replies[j]->ip_addr) == 0)
-                replies[j]->recived = 0;
+            if(strcmp((*replies)[i].ip_addr, (*replies)[j].ip_addr) == 0)
+                (*replies)[j].recived = 0;
         }
     }
 
     if(no_avg)
         printf("%s\n", "???");
     else
-        printf("%d\n", avg);
+        printf("%dms\n", avg);
 }

@@ -10,8 +10,6 @@
 
 #include <sys/time.h>
 
-#define DEBUG
-
 #ifdef DEBUG
 #define LOG(format, ...) printf(format "\n", ##__VA_ARGS__)
 #define LOG_BYTES(msg, buff, length)  \
@@ -33,7 +31,7 @@ typedef struct
 {
     int32_t  recived;
     char    ip_addr[20];
-    int32_t us;
+    int32_t ms;
 } reply_data;
 
 void print_as_bytes(unsigned char* buff, ssize_t length);

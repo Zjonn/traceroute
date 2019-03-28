@@ -20,11 +20,11 @@ static u_int16_t compute_icmp_checksum(const void* buff, int length);
 
 static inline void set_icmphdr(struct icmphdr* icmp_hdr, int ttl)
 {
-    icmp_hdr->type             = ICMP_ECHO;
-    icmp_hdr->code             = 0;
-    icmp_hdr->un.echo.id       = getpid();
+    icmp_hdr->type = ICMP_ECHO;
+    icmp_hdr->code = 0;
+    icmp_hdr->un.echo.id = getpid();
     icmp_hdr->un.echo.sequence = ttl;
-    icmp_hdr->checksum         = 0;
+    icmp_hdr->checksum = 0;
     icmp_hdr->checksum = compute_icmp_checksum((u_int16_t*)icmp_hdr, sizeof(*icmp_hdr));
 }
 
@@ -58,7 +58,7 @@ void send_pings(int sockfd, char ip_adr[], int ttl)
 
 static u_int16_t compute_icmp_checksum(const void* buff, int length)
 {
-    u_int32_t        sum;
+    u_int32_t sum;
     const u_int16_t* ptr = buff;
     assert(length % 2 == 0);
 
