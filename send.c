@@ -1,3 +1,6 @@
+/*
+/ Daniel Dubiel 291111
+*/
 #include "send.h"
 #include <arpa/inet.h>
 
@@ -20,11 +23,11 @@ static u_int16_t compute_icmp_checksum(const void* buff, int length);
 
 static inline void set_icmphdr(struct icmphdr* icmp_hdr, int ttl)
 {
-    icmp_hdr->type = ICMP_ECHO;
-    icmp_hdr->code = 0;
-    icmp_hdr->un.echo.id = getpid();
+    icmp_hdr->type             = ICMP_ECHO;
+    icmp_hdr->code             = 0;
+    icmp_hdr->un.echo.id       = getpid();
     icmp_hdr->un.echo.sequence = ttl;
-    icmp_hdr->checksum = 0;
+    icmp_hdr->checksum         = 0;
     icmp_hdr->checksum = compute_icmp_checksum((u_int16_t*)icmp_hdr, sizeof(*icmp_hdr));
 }
 
@@ -41,7 +44,7 @@ void send_pings(int sockfd, char ip_adr[], int ttl)
     setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int));
 
     LOG_BYTES("ICMP_ECHO to send", &icmp_header, sizeof(icmp_header))
-    for(int i = 0; i < PACKEGES_PER_TTL; i++)
+    for(int i = 0; i < PACKES_PER_TTL; i++)
     {
         ssize_t bytes_sent = sendto(sockfd, &icmp_header, sizeof(icmp_header), 0,
                                     (struct sockaddr*)&recipient, sizeof(recipient));
@@ -58,7 +61,7 @@ void send_pings(int sockfd, char ip_adr[], int ttl)
 
 static u_int16_t compute_icmp_checksum(const void* buff, int length)
 {
-    u_int32_t sum;
+    u_int32_t        sum;
     const u_int16_t* ptr = buff;
     assert(length % 2 == 0);
 

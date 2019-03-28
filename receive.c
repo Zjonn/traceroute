@@ -1,3 +1,6 @@
+/*
+/ Daniel Dubiel 291111
+*/
 #include <arpa/inet.h>
 #include <errno.h>
 #include <stdio.h>
@@ -7,9 +10,9 @@
 
 #include "netinet/ip.h"
 #include "netinet/ip_icmp.h"
-#include "recive.h"
+#include "receive.h"
 
-int recive(int sockfd, int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
+int receive(int sockfd, int ttl, reply_data (*replies)[PACKES_PER_TTL])
 {
     int                is_reached = 0;
     struct sockaddr_in sender;
@@ -20,7 +23,7 @@ int recive(int sockfd, int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
     timeout.tv_sec  = 1;
     timeout.tv_usec = 0;
 
-    for(int i = 0; i < PACKEGES_PER_TTL;)
+    for(int i = 0; i < PACKES_PER_TTL;)
     {
         fd_set descriptors;
         FD_ZERO(&descriptors);
@@ -34,7 +37,7 @@ int recive(int sockfd, int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
         if(ready == 0)
             break;
 
-        for(int j = 0; j < ready && i < PACKEGES_PER_TTL; j++)
+        for(int j = 0; j < ready && i < PACKES_PER_TTL; j++)
         {
             ssize_t packet_len = recvfrom(sockfd, buffer, IP_MAXPACKET, 0,
                                           (struct sockaddr*)&sender, &sender_len);
@@ -43,7 +46,7 @@ int recive(int sockfd, int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
                 EXIT_ERR("recvfrom error");
             }
 
-            char tmp_sender_ip[20] = {0};
+            char tmp_sender_ip[20] = { 0 };
             inet_ntop(AF_INET, &(sender.sin_addr), tmp_sender_ip, sizeof(tmp_sender_ip));
 
             LOG("Received IP packet with ICMP content from: %s", tmp_sender_ip);

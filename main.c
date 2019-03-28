@@ -1,3 +1,6 @@
+/*
+/ Daniel Dubiel 291111
+*/
 #include "netinet/ip.h"
 #include "netinet/ip_icmp.h"
 #include <arpa/inet.h>
@@ -11,12 +14,12 @@
 #include "stdio.h"
 
 #include "defines.h"
-#include "recive.h"
+#include "receive.h"
 #include "send.h"
 #include "utils.h"
 
 static int check_input(int argc, char* argv[]);
-static void print_results(int ttl, reply_data (*replies)[PACKEGES_PER_TTL]);
+static void print_results(int ttl, reply_data (*replies)[PACKES_PER_TTL]);
 
 int main(int argc, char* argv[])
 {
@@ -34,14 +37,14 @@ int main(int argc, char* argv[])
         EXIT_ERR("socket error");
     }
 
-    reply_data replies[PACKEGES_PER_TTL];
+    reply_data replies[PACKES_PER_TTL];
     for(int ttl = 1, reached = 0; ttl < MAX_TTL && reached == 0; ttl++)
     {
         send_pings(socketfd, argv[1], ttl);
 
         LOG("");
         memset(replies, 0, sizeof(replies));
-        reached = recive(socketfd, ttl, &replies);
+        reached = receive(socketfd, ttl, &replies);
 
         LOG("");
         print_results(ttl, &replies);
@@ -64,11 +67,11 @@ static int check_input(int argc, char* argv[])
     return 1;
 }
 
-static void print_results(int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
+static void print_results(int ttl, reply_data (*replies)[PACKES_PER_TTL])
 {
     int8_t  is_reply = 0, no_avg = 0;
     int16_t avg = 0;
-    for(int i = 0; i < PACKEGES_PER_TTL; i++)
+    for(int i = 0; i < PACKES_PER_TTL; i++)
     {
         is_reply += (*replies)[i].recived;
         no_avg += (*replies)[i].recived == 0;
@@ -76,7 +79,7 @@ static void print_results(int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
 
         LOG("%d ", (*replies)[i].recived);
     }
-    avg /= PACKEGES_PER_TTL;
+    avg /= PACKES_PER_TTL;
 
     printf("%.2d. ", ttl);
     if(!is_reply)
@@ -84,12 +87,12 @@ static void print_results(int ttl, reply_data (*replies)[PACKEGES_PER_TTL])
         printf("*\n");
         return;
     }
-    for(int i = 0; i < PACKEGES_PER_TTL; i++)
+    for(int i = 0; i < PACKES_PER_TTL; i++)
     {
         if((*replies)[i].recived)
             printf("%s ", (*replies)[i].ip_addr);
 
-        for(int j = PACKEGES_PER_TTL - 1; j > i; j--)
+        for(int j = PACKES_PER_TTL - 1; j > i; j--)
         {
             if(strcmp((*replies)[i].ip_addr, (*replies)[j].ip_addr) == 0)
                 (*replies)[j].recived = 0;
