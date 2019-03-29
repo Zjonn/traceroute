@@ -12,24 +12,30 @@
 
 #ifdef DEBUG
 #define LOG(format, ...) printf(format "\n", ##__VA_ARGS__)
-#define LOG_BYTES(msg, buff, length)  \
-    {                                 \
-        printf(msg " ");              \
-        print_as_bytes((unsigned char *)(buff), length); \
-        printf("\n");                 \
+#define LOG_BYTES(msg, buff, length)                    \
+    {                                                   \
+        printf(msg " ");                                \
+        print_as_bytes((unsigned char*)(buff), length); \
+        printf("\n");                                   \
     }
 #else
-#define LOG(format, ...)
-#define LOG_BYTES(msg, buff, length)
+#define LOG(format, ...) \
+    {                    \
+    }
+#define LOG_BYTES(msg, buff, length) \
+    {                                \
+    }
 #endif
 
-#define EXIT_ERR(MSG)                                    \
-    fprintf(stderr, MSG " ERRNO %s\n", strerror(errno)); \
-    exit(EXIT_FAILURE)
+#define EXIT_ERR(MSG)                                        \
+    {                                                        \
+        fprintf(stderr, MSG " ERRNO %s\n", strerror(errno)); \
+        exit(EXIT_FAILURE);                                  \
+    }
 
 typedef struct
 {
-    int32_t  recived;
+    int32_t recived;
     char    ip_addr[20];
     int32_t ms;
 } reply_data;

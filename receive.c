@@ -47,7 +47,10 @@ int receive(int sockfd, int ttl, reply_data (*replies)[PACKES_PER_TTL])
             }
 
             char tmp_sender_ip[20] = { 0 };
-            inet_ntop(AF_INET, &(sender.sin_addr), tmp_sender_ip, sizeof(tmp_sender_ip));
+            if(inet_ntop(AF_INET, &(sender.sin_addr), tmp_sender_ip,
+                         sizeof(tmp_sender_ip)) == 0)
+                EXIT_ERR("Sender ip corrupted!");
+
 
             LOG("Received IP packet with ICMP content from: %s", tmp_sender_ip);
 

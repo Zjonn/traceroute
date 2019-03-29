@@ -39,9 +39,12 @@ void send_pings(int sockfd, char ip_adr[], int ttl)
     struct sockaddr_in recipient;
     bzero(&recipient, sizeof(recipient));
     recipient.sin_family = AF_INET;
-    inet_pton(AF_INET, ip_adr, &recipient.sin_addr);
+    if(inet_pton(AF_INET, ip_adr, &recipient.sin_addr) <= 0)
+        EXIT_ERR("");
 
-    setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int));
+    if(setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int)) == -1){
+        EXIT_ERR("setsockopt error");
+    }
 
     LOG_BYTES("ICMP_ECHO to send", &icmp_header, sizeof(icmp_header))
     for(int i = 0; i < PACKES_PER_TTL; i++)
