@@ -2,14 +2,14 @@ src = $(wildcard *.c)
 obj = $(src:.c=.o)
 
 #LDFLAGS = 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -std=gnu99
 
 traceroute: $(obj)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 .PHONY: clean distclean
 clean:
-	rm  -f $(obj) traceroute
+	rm  -f $(obj)
 
 distclean:
-	rm traceroute
+	rm  -f $(obj) traceroute
